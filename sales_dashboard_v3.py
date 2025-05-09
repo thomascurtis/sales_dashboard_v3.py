@@ -26,23 +26,55 @@ monthly_goal = yearly_target / 12
 predicted_completion = sales_velocity * days_in_year
 percent_achieved = (total_sales / yearly_target) if yearly_target > 0 else 0
 percent_year_passed = (days_passed / days_in_year) * 100
-
-# --- Calculate target sales per day ---
 target_sales_per_day = sales_left / days_remaining if days_remaining > 0 else 0
+
+# --- Custom CSS for Metric Cells ---
+st.markdown(
+    """
+    <style>
+    .metric-container {
+        background-color: #383838; /* A darker gray for dark mode */
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 10px;
+        color: white; /* Ensure text inside is visible */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # --- Dashboard Layout ---
 st.title(f"📊 {current_year} Sales Dashboard")
 
-with st.form("record_sale_form"):
-    new_sale = st.number_input("Enter new sale amount:", value=0, step=1, key="new_sale_input")
-    submitted = st.form_submit_button("Record Sale")
-    if submitted:
-        st.session_state['total_sales'] += new_sale
+#with st.form("record_sale_form"):
+#    new_sale = st.number_input("Enter new sale amount:", value=0.0, step=1.0, key="new_sale_input")
+#    submitted = st.form_submit_button("Record Sale")
+#    if submitted:
+#        st.session_state['total_sales'] += new_sale
+#        st.experimental_rerun()
 
-col1, col2, col3 = st.columns(3)
-col1.markdown(f"<span style='color: #00FF00; font-size: 1.5em;'>{total_sales:.0f}</span> Total Sales", unsafe_allow_html=True)
-col2.markdown(f"<span style='color: #FFA500; font-size: 1.5em;'>{yearly_target:.0f}</span> Yearly Target", unsafe_allow_html=True)
-col3.markdown(f"<span style='color: #FF4500; font-size: 1.5em;'>{sales_left:.0f}</span> Sales Left", unsafe_allow_html=True)
+st.subheader("Key Metrics")
+col1, col2, col3, col_vel_target = st.columns(4)
+col1.markdown(f"<div class='metric-container'><span style='color: #00FF00; font-size: 1.5em;'>{total_sales:.0f}</span><br>Total Sales</div>", unsafe_allow_html=True)
+col2.markdown(f"<div class='metric-container'><span style='color: #FFA500; font-size: 1.5em;'>{yearly_target:.0f}</span><br>Yearly Target</div>", unsafe_allow_html=True)
+col3.markdown(f"<div class='metric-container'><span style='color: #FF4500; font-size: 1.5em;'>{sales_left:.0f}</span><br>Sales Left</div>", unsafe_allow_html=True)
+col_vel_target.markdown(f"<div class='metric-container'><span style='color: #1E90FF; font-size: 1.5em;'>{sales_velocity:.2f}</span><br>Sales Velocity (Daily)<br><span style='color: #DA70D6; font-size: 1.0em;'>🎯 Target: {target_sales_per_day:.2f}</span></div>", unsafe_allow_html=True)
+
+st.subheader("Progress")
+col_progress, col_target_day = st.columns(2)
+with col_progress:
+    st.progress(percent_achieved)
+    st.write(f"{percent_achieved * 100:.2f}% of target achieved")
+# with col_target_day:
+#    st.markdown(f"<div class='metric-container'><span style='color: #DA70D6; font-size: 1.5em;'>{target_sales_per_day:.2f}</span><br>Target Sales/Day (to Goal)</div>", unsafe_allow_html=True)
+
+st.subheader("Additional Details")
+col_date, col_days, col_year_percent, col_achieved_percent = st.columns(4)
+col_date.info(f"🗓️ Current Date: {now.strftime('%Y-%m-%d')}")
+col_days.info(f"⏳ Day {days_passed} of {days_in_year}")
+col_year_percent.info(f"📈 {percent_year_passed:.2f}% of Year Passed")
+col_achieved_percent.info(f"✅ {percent_achieved * 100:.2f}% of Target Achieved")
 
 # --- Motivational Message ---
 st.subheader("🌟 Motivation")
@@ -53,18 +85,3 @@ elif percent_achieved < 0.75:
 else:
     st.balloons()
     st.success("Fantastic! You're on track to smash your target! 🏆")
-
-st.subheader("Progress Towards Yearly Target")
-st.progress(percent_achieved)
-st.write(f"{percent_achieved * 100:.2f}% of target achieved")
-
-st.subheader("Key Performance Indicators")
-col_vel, col_target_day = st.columns(2)
-col_vel.markdown(f"<span style='color: #1E90FF; font-size: 1.5em;'>{sales_velocity:.2f}</span> Sales Velocity (Daily)", unsafe_allow_html=True)
-col_target_day.markdown(f"<span style='color: #DA70D6; font-size: 1.5em;'>{target_sales_per_day:.2f}</span> Target Sales/Day (to Goal)", unsafe_allow_html=True)
-
-st.subheader("ℹ️ Additional Details")
-st.write(f"🗓️ Current Date: {now.strftime('%Y-%m-%d')}")
-st.write(f"⏳ Days Passed in Year: {days_passed}")
-st.write(f"📈 Percentage of Year Passed: {percent_year_passed:.2f}%")
-st.write(f"✅ Percentage of Target Achieved: {(total_sales / yearly_target) * 100:.2f}%")
