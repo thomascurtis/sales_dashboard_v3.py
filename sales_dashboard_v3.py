@@ -38,7 +38,6 @@ with st.form("record_sale_form"):
     submitted = st.form_submit_button("Record Sale")
     if submitted:
         st.session_state['total_sales'] += new_sale
-        st.experimental_rerun()
 
 col1, col2, col3 = st.columns(3)
 col1.markdown(f"<span style='color: #00FF00; font-size: 1.5em;'>{total_sales:.0f}</span> Total Sales", unsafe_allow_html=True)
