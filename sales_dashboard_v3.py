@@ -34,7 +34,7 @@ target_sales_per_day = sales_left / days_remaining if days_remaining > 0 else 0
 st.title(f"📊 {current_year} Sales Dashboard")
 
 with st.form("record_sale_form"):
-    new_sale = st.number_input("Enter new sale amount:", value=0.0, step=1.0, key="new_sale_input")
+    new_sale = st.number_input("Enter new sale amount:", value=0, step=1, key="new_sale_input")
     submitted = st.form_submit_button("Record Sale")
     if submitted:
         st.session_state['total_sales'] += new_sale
@@ -44,6 +44,16 @@ col1, col2, col3 = st.columns(3)
 col1.markdown(f"<span style='color: #00FF00; font-size: 1.5em;'>{total_sales:.0f}</span> Total Sales", unsafe_allow_html=True)
 col2.markdown(f"<span style='color: #FFA500; font-size: 1.5em;'>{yearly_target:.0f}</span> Yearly Target", unsafe_allow_html=True)
 col3.markdown(f"<span style='color: #FF4500; font-size: 1.5em;'>{sales_left:.0f}</span> Sales Left", unsafe_allow_html=True)
+
+# --- Motivational Message ---
+st.subheader("🌟 Motivation")
+if percent_achieved < 0.5:
+    st.info("Keep pushing forward! Every sale counts towards your goal. 💪")
+elif percent_achieved < 0.75:
+    st.success("Great progress! You're more than halfway there. Keep the momentum! 🎉")
+else:
+    st.balloons()
+    st.success("Fantastic! You're on track to smash your target! 🏆")
 
 st.subheader("Progress Towards Yearly Target")
 st.progress(percent_achieved)
